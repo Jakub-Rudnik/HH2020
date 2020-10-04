@@ -1,9 +1,9 @@
 // Test
 
 const get_data = async () => {
-    const data_pre = await fetch("adreserwera");
-    const data = await data_pre.json();
-    return data;
+    const data_pre = await fetch("localhost/hh2020/serwer/skrt.php");
+    // const data = ;
+    return data_pre;
 };
 
 get_data()
