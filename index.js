@@ -8,10 +8,3 @@ const get_data = async () => {
 get_data()
     .then((e) => console.log(e))
     .catch((e) => console.log(e));
-
-
-const woman {
-    smaller: true,
-    inteligent: "less",
-    
-}
