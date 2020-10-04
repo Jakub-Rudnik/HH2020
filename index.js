@@ -6,4 +6,6 @@ const get_data = async () => {
     return data;
 };
 
-get_data.then((e) => console.log(e));
+get_data()
+    .then((e) => console.log(e))
+    .catch((e) => console.log(e));
