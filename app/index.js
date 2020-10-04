@@ -1,7 +1,7 @@
 // Test
 
 const get_data = async () => {
-    const response = await fetch("http://localhost:8000/api");
+    const response = await fetch("http://localhost:8000/api/");
     return response.json();
 };
 

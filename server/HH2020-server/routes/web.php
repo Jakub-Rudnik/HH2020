@@ -14,5 +14,10 @@ use Illuminate\Support\Facades\Route;
 */
 
 Route::get('/api', function () {
-    return response('Hello World', 200);
+    $data=["Czy_dziala"=>1];
+    return response()->json($data,200);
+});
+
+Route::get("/api/1",function(){
+    return response("Dziala",200);
 });
