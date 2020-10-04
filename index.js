@@ -1,11 +1,17 @@
 // Test
 
 const get_data = async () => {
-    const data_pre = await fetch("localhost/hh2020/serwer/skrt.php");
-    // const data = ;
-    return data_pre;
+    const response = await fetch("localhost/hh2020/serwer/skrt.php");
+    return response.json();
 };
 
 get_data()
     .then((e) => console.log(e))
     .catch((e) => console.log(e));
+
+
+const woman {
+    smaller: true,
+    inteligent: "less",
+    
+}
