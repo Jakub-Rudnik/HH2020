@@ -1,0 +1,12 @@
+# Mobile app
+app-mobile/node_modules/**/*
+app-mobile/.expo/*
+app-mobile/npm-debug.*
+app-mobile/*.jks
+app-mobile/*.p8
+app-mobile/*.p12
+app-mobile/*.key
+app-mobile/*.mobileprovision
+app-mobile/*.orig.*
+app-mobile/web-build/
+app-mobile/web-report/
