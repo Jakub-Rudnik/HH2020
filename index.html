@@ -1,114 +1,82 @@
 <script src="tf.js"></script>
 <!-- <input type="file" id="img"> -->
-<img style="position: absolute;" src="http://localhost/m1.jpg" id="img" width="640px" height="640px"> 
-<canvas style="position: absolute;" id="myCanvas" width="640px" height="640px" style="border:1px solid #d3d3d3;"></canvas>
-<button style="margin-top: 80vw;" onclick="yourFunction()">AAA</button>
+<img
+  style="position: absolute"
+  crossorigin="anonymous"
+  src="http://localhost/m3.jpg"
+  id="img"
+  width="640px"
+  height="640px"
+/>
+<canvas
+  style="position: absolute"
+  id="myCanvas"
+  width="640px"
+  height="640px"
+  style="border: 1px solid #d3d3d3"
+></canvas>
+<button style="margin-top: 80vw" onclick="yourFunction()">Predict</button>
+<input type="range" onchange="draw_rect()" min="1" max="100" value="50" id="demo">
+
 <script>
-  //  import * as tf from '@tensorflow/tfjs';
+  async function yourFunction() {
+    const MODEL_URL = "http://localhost/my_model_ssd_v2/model_jss/model.json";
 
-//import * as tf from '@tensorflow/tfjs';
-//import {loadGraphModel} from '@tensorflow/tfjs-converter';
-// const model = tf.sequential();
-// model.add(tf.layers.dense({units: 1, inputShape: [1]}));
+    const model = await tf.loadGraphModel(MODEL_URL);
 
-// model.compile({loss: 'meanSquaredError', optimizer: 'sgd'});
+    const cat = document.getElementById("img");
+    car2 = tf.browser.fromPixels(cat);
+    cat3 = car2.expandDims(0);
 
-// // Generate some synthetic data for training.
-// const xs = tf.tensor2d([1, 2, 3, 4], [4, 1]);
-// const ys = tf.tensor2d([1, 3, 5, 7], [4, 1]);
+    predictions = model.predict(cat3).then((predictions) => {
 
-// // Train the model using the data.
-// model.fit(xs, ys, {epochs: 10}).then(() => {
-//   // Use the model to do inference on a data point the model hasn't seen before:
-//   model.predict(tf.tensor2d([5], [1, 1])).print();
-//   // Open the browser devtools to see the output
-// });
-async function yourFunction(){
-const MODEL_URL = 'http://localhost/my_model_ssd_v2/model_jss/model.json';
-//const model = await tf.loadGraphModel('modeljs2/model.json');
+      const data = predictions[0].dataSync();
 
-const model = await tf.loadGraphModel(MODEL_URL);
-//const cat = document.getElementById('cat');
-// model.execute(tf.browser.fromPixels("https://www.auchandirect.pl/images/h71/ha8/10252499976222.jpg"));
-const img = document.getElementById('img');
-img.crossOrigin = "anonymous"
-// resized1=tf.zeros([1,320, 320,3], dtype="int32")
+      predictions.forEach((element) => {
+        console.log(element.arraySync());
+      });
+window.glob=predictions
+      draw_rect()
 
-const data = new Uint8Array(img.data);
-const temp = tf.browser.fromPixels({data, width: img.width, height: img.height}, 4);
-const img2 =temp.slice([0, 0, 0], [-1, -1, 3]).resizeBilinear([640, 640]);
-
-// img2=tf.browser.fromPixels(img)
-// img2=img2.expandDims(0)
-// #const smallImg = await tf.image.resizeBilinear(img2, [640, 640]);
-//  const resized = tf.cast(smallImg, 'int32');
-console.log(img2.arraySync())
- t4d = tf.tensor4d(Array.from(img2.dataSync()), [1, 640, 640, 3]);
-// resized1=tf.zeros([1,320, 320,3], dtype="int32")
-console.log(t4d.arraySync())
-t4d = tf.cast(t4d, 'int32');
-
-predictions = model.predict(img2).then(predictions => {
-
-  const data = predictions[0].dataSync()
-  predictions.forEach(element => {
-    console.log(element.arraySync())
-  });
-  console.log(predictions[5].dataSync())
-  element=predictions[5].arraySync()[0][0]
-  var c = document.getElementById("myCanvas");
-var ctx = c.getContext("2d");
-ctx.beginPath();
-ctx.strokeStyle = "red";
-ctx.rect(element[0]*640, element[1]*640, element[2]*640-element[0]*640, element[3]*640-element[1]*640);
-console.log(element[0]*640,element[1]*640,element[2]*640,element[3]*640)
-// console.log(element[1]*640, element[3]*640, element[3]*640, element[2]*640)
-// console.log(element[1]*640, element[3]*640, element[3]*640-element[1]*640, element[2]*640-element[0]*640)
-ctx.stroke();
-// predictions[2].arraySync()[0].forEach(element => {
-//   ctx.beginPath();
-// ctx.strokeStyle = "red";
-// ctx.rect(element[0]*640, element[1]*640, element[2]*640, element[3]*640);
-
-// ctx.stroke();
-//   });
-
-      console.log('Predictions: ', data);
+      element = predictions[5].arraySync()[0][0];
+      var c = document.getElementById("myCanvas");
+      var ctx = c.getContext("2d");
+      ctx.beginPath();
+      ctx.strokeStyle = "green";
+      ctx.lineWidth = "6";
+      ctx.rect(
+        element[1] * 640,
+        element[0] * 640,
+        element[3] * 640 - element[1] * 640,
+        element[2] * 640 - element[0] * 640
+      );
+      ctx.stroke();
     });
+  }
 
+  function draw_rect(){
+    console.log("DRAW")
+    predictions=window.glob
+    var output = document.getElementById("demo");
+    scores=predictions[4].arraySync()[0]
+      var c = document.getElementById("myCanvas");
+      var ctx = c.getContext("2d");
+      ctx.clearRect(0, 0, 640, 640);
 
-// const compute = () => {
+      for(let i=0;i<100;i++){
+        if(scores[i]>output.value/100){
+      element = predictions[5].arraySync()[0][i];
+      ctx.beginPath();
+      ctx.strokeStyle = "red";
+      ctx.rect(
+        element[1] * 640,
+        element[0] * 640,
+        element[3] * 640 - element[1] * 640,
+        element[2] * 640 - element[0] * 640
+      );
+      ctx.stroke();
+        }
+      }
 
-// try {
-//     // const tensor = tf.tensor(resized1, [1, 100])
-//     const prediction = this.model.predict(resized1)
-//     return Promise.resolve(prediction.data())
-// }
-// catch(err){
-
-//     return Promise.reject(err)
-
-// }
-
-// }
-// compute.then(res => consonle.log(res)).catch(err => console.log(err));
-
-}
-// yourFunction()
-
-// (async () => {
-//   const img = document.getElementById('img');
-
-//   // Load the model.
-//   const model = await  tf.loadGraphModel('http://localhost/my_modeljs5/model.json');
-
-//   // Classify the image.
-//   const example = tf.browser.fromPixels("https://lokalnyrolnik.pl/media/images/users_images/21826/product_images/10114/mlekokozie.jpg");
-
-
-//   const predictions = await model.predict(example);
-
-//   console.log('Predictions: ');
-//   console.log(predictions);
-// })();
+  }
 </script>
