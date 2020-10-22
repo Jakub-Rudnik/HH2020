@@ -1,0 +1,82 @@
+<script src="tf.js"></script>
+<!-- <input type="file" id="img"> -->
+<img
+  style="position: absolute"
+  crossorigin="anonymous"
+  src="http://localhost/m4.jpg"
+  id="img"
+  width="640px"
+  height="640px"
+/>
+<canvas
+  style="position: absolute"
+  id="myCanvas"
+  width="640px"
+  height="640px"
+  style="border: 1px solid #d3d3d3"
+></canvas>
+<button style="margin-top: 700px" onclick="yourFunction()">Predict</button>
+<input type="range" onchange="draw_rect()" min="1" max="100" value="50" id="demo">
+
+<script>
+  async function yourFunction() {
+    const MODEL_URL = "http://localhost/my_model_ssd_js_out/model.json";
+
+    const model = await tf.loadGraphModel(MODEL_URL);
+
+    const cat = document.getElementById("img");
+    car2 = tf.browser.fromPixels(cat);
+    cat3 = car2.expandDims(0);
+
+    predictions = model.executeAsync(cat3).then((predictions) => {
+
+      const data = predictions[0].dataSync();
+
+      predictions.forEach((element) => {
+        console.log(element.arraySync());
+      });
+window.glob=predictions
+      draw_rect()
+
+      element = predictions[2].arraySync()[0][0];
+      var c = document.getElementById("myCanvas");
+      var ctx = c.getContext("2d");
+      ctx.beginPath();
+      ctx.strokeStyle = "green";
+      ctx.lineWidth = "6";
+      ctx.rect(
+        element[1] * 640,
+        element[0] * 640,
+        element[3] * 640 - element[1] * 640,
+        element[2] * 640 - element[0] * 640
+      );
+      ctx.stroke();
+    });
+  }
+
+  function draw_rect(){
+    console.log("DRAW")
+    predictions=window.glob
+    var output = document.getElementById("demo");
+    scores=predictions[4].arraySync()[0]
+      var c = document.getElementById("myCanvas");
+      var ctx = c.getContext("2d");
+      ctx.clearRect(0, 0, 640, 640);
+
+      for(let i=0;i<100;i++){
+        if(scores[i]>output.value/100){
+      element = predictions[2].arraySync()[0][i];
+      ctx.beginPath();
+      ctx.strokeStyle = "red";
+      ctx.rect(
+        element[1] * 640,
+        element[0] * 640,
+        element[3] * 640 - element[1] * 640,
+        element[2] * 640 - element[0] * 640
+      );
+      ctx.stroke();
+        }
+      }
+
+  }
+</script>

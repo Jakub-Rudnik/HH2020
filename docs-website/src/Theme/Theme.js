@@ -4,7 +4,10 @@ const theme = {
     grey: '#F5F5F7',
     white: 'FFFFFF',
     yellow: 'yeloww',
-    textgradient: '-webkit-linear-gradient(#2F9432, #AACF8A);',
+  },
+  gradient: {
+    textgradient: '-webkit-linear-gradient(#AACF8A, #2F9432);',
+    gradient: 'linear-gradient(#AACF8A, #2F9432);',
   },
   font: {
     size: {
@@ -13,6 +16,14 @@ const theme = {
       subheading: '38px',
       heading: '64px',
     },
+    family: {
+      mb: "font-family: 'Montserrat-Bold';",
+      mr: "font-family: 'Montserrat-Regular';",
+      r: "font-family: 'Raleway';",
+    },
+  },
+  mq: {
+    desktop: '@media (min-width: 1024px)',
   },
 };
 

@@ -2,6 +2,7 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import styled, { createGlobalStyle, ThemeProvider } from 'styled-components';
 import theme from '../Theme/Theme.js';
+import '../Fonts/Fonts.css';
 
 const GlobalStyles = createGlobalStyle`
 *,
@@ -25,7 +26,7 @@ body,
   height: auto;
   display: flex;
   justify-content: center;
-  background-color: #f8f8f8;
+  background-color: ${theme.colors.grey};
 }
 `;
 
@@ -36,8 +37,13 @@ const StyledWrapper = styled.div`
   min-height: 100vh;
   display: flex;
   align-items: center;
-  justify-content: center;
   flex-direction: column;
+  font-family: 'Montserrat-Regular';
+  padding: 20px;
+
+  ${theme.mq.desktop} {
+    width: 75%;
+  }
 `;
 
 export default function Layout({ children }) {
