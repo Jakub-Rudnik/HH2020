@@ -3,14 +3,13 @@ import { Text, View, TouchableOpacity } from "react-native";
 import * as Permission from "expo-permissions";
 import * as ImageManipulator from "expo-image-manipulator";
 import * as tf from "@tensorflow/tfjs";
-import * as cocossd from "@tensorflow-models/coco-ssd";
-import { decodeJpeg } from "@tensorflow/tfjs-react-native";
+import { bundleResourceIO, decodeJpeg } from "@tensorflow/tfjs-react-native";
 import { Camera } from "expo-camera";
 
 const Home = (): JSX.Element => {
   const [hasPermission, setHasPermission] = useState<boolean>(false);
   const [isTfReady, setIsTfReady] = useState<boolean>(false);
-  const [tfModel, setTfModel] = useState<cocossd.ObjectDetection | null>(null);
+  const [tfModel, setTfModel] = useState<tf.GraphModel | null>(null);
   const [type, setType] = useState(Camera.Constants.Type.back);
   const cameraRef = useRef<Camera>(null);
 
@@ -55,10 +54,14 @@ const Home = (): JSX.Element => {
           console.log("Photo has been converted to unit8array.");
           const imageTensor = decodeJpeg(raw);
           console.log("Photo has been decoded to a 3D Tensor.");
+          const image4d = imageTensor.expandDims(0);
 
-          const predictions = await model.detect(imageTensor);
+          const predictions = await model.executeAsync(image4d);
 
-          console.log(predictions);
+          const element = predictions[2].arraySync()[0][0];
+          console.log(element[0]);
+
+          // console.log(predictions[0].dataSync());
         } else {
           console.log("Cant properly resize photo with base64 as output");
         }
@@ -80,8 +83,18 @@ const Home = (): JSX.Element => {
         await tf.ready();
         console.log("Tenserflow framework is ready to work!");
         try {
+          console.log("Loading files");
+
+          // eslint-disable-next-line @typescript-eslint/no-var-requires
+          const modelJson = require("../../assets/model/model.json");
+          // eslint-disable-next-line @typescript-eslint/no-var-requires
+          const modelWeights = require("../../assets/model/group1-shard1of1.bin");
+
           console.log("Loading ai model");
-          const model = await cocossd.load();
+          const model = await tf.loadGraphModel(
+            bundleResourceIO(modelJson, modelWeights)
+          );
+
           setTfModel(model);
           console.log("Succes");
         } catch (error) {
