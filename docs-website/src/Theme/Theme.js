@@ -3,7 +3,7 @@ const theme = {
     black: '#303030',
     grey: '#F5F5F7',
     white: 'FFFFFF',
-    yellow: 'yeloww',
+    yellow: 'yellow',
   },
   gradient: {
     textgradient: '-webkit-linear-gradient(#AACF8A, #2F9432);',

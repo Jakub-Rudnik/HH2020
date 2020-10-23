@@ -1,11 +1,10 @@
 import React from 'react';
 import styled from 'styled-components';
+import handleHeadingColor from '../../Scripts/handleHeadingColor.js';
 
 const StyledWrapper = styled.button`
   border: none;
   padding: 15px 0;
-  position: absolute;
-  left: 0;
   background: none;
   z-index: 30;
   width: 30px;
@@ -22,7 +21,7 @@ const StyledHamburger = styled.div`
   ::after {
     position: absolute;
     width: 30px;
-    background: ${({ theme }) => theme.gradient.gradient};
+    background: ${({ color }) => handleHeadingColor(color)};
     height: 4px;
     left: 0;
     content: '';
@@ -42,10 +41,10 @@ const StyledHamburger = styled.div`
   }
 `;
 
-export default function Hamburger({ handleOnPress, isOpen }) {
+export default function Hamburger({ handleOnPress, isOpen, color }) {
   return (
     <StyledWrapper onClick={handleOnPress}>
-      <StyledHamburger isOpen={isOpen} />
+      <StyledHamburger isOpen={isOpen} color={color} />
     </StyledWrapper>
   );
 }

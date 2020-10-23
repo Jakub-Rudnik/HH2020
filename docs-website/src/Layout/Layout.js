@@ -1,8 +1,10 @@
-import React from 'react';
+import React, { useContext } from 'react';
 import PropTypes from 'prop-types';
 import styled, { createGlobalStyle, ThemeProvider } from 'styled-components';
 import theme from '../Theme/Theme.js';
 import '../Fonts/Fonts.css';
+import backgroundContext from '../Scripts/backgroundContext.js';
+import handleBackgroundColor from '../Scripts/handleBackgroundColor.js';
 
 const GlobalStyles = createGlobalStyle`
 *,
@@ -26,32 +28,28 @@ body,
   height: auto;
   display: flex;
   justify-content: center;
-  background-color: ${theme.colors.grey};
 }
 `;
 
 const StyledWrapper = styled.div`
   width: 100%;
-  color: ${theme.colors.black};
-  background: ${theme.colors.grey};
+  background: ${({ background }) => handleBackgroundColor(background)};
   min-height: 100vh;
   display: flex;
   align-items: center;
   flex-direction: column;
   font-family: 'Montserrat-Regular';
   padding: 20px;
-
-  ${theme.mq.desktop} {
-    width: 75%;
-  }
 `;
 
 export default function Layout({ children }) {
+  const { background } = useContext(backgroundContext);
+
   return (
     <ThemeProvider theme={theme}>
       <>
         <GlobalStyles />
-        <StyledWrapper>{children}</StyledWrapper>
+        <StyledWrapper background={background}>{children}</StyledWrapper>
       </>
     </ThemeProvider>
   );

@@ -1,5 +1,7 @@
 import React from 'react';
 import styled from 'styled-components';
+import handleHeadingColor from '../../Scripts/handleHeadingColor.js';
+import handleParagraphColor from '../../Scripts/handleParagraphColor.js';
 
 const StyledWrapper = styled.section`
   width: 100%;
@@ -10,12 +12,12 @@ const StyledWrapper = styled.section`
   padding-left: ${({ isOpen }) => (isOpen ? '25px' : '0')};
 
   ${({ theme }) => theme.mq.desktop} {
-    padding-left: 90px;
+    margin-left: 180px;
   }
 `;
 
 const StyledHeading = styled.h1`
-  background: ${({ theme }) => theme.gradient.textgradient};
+  background: ${({ color }) => handleHeadingColor(color)};
   font-size: ${({ theme }) => theme.font.size.heading};
   font-family: 'Raleway';
   -webkit-background-clip: text;
@@ -24,26 +26,28 @@ const StyledHeading = styled.h1`
 
 const StyledSubHeading = styled.h4`
   font-size: ${({ theme }) => theme.font.size.subheading};
+  color: ${({ color }) => handleParagraphColor(color)};
   font-family: 'Montserrat-Bold';
   margin-top: 40px;
 `;
 
 const StyledParagraph = styled.p`
   font-size: ${({ theme }) => theme.font.size.paragraph};
+  color: ${({ color }) => handleParagraphColor(color)};
   margin-top: 20px;
 `;
 
-const Section = ({ isOpen }) => {
+const Section = ({ isOpen, color }) => {
   return (
     <StyledWrapper isOpen={isOpen}>
-      <StyledHeading>Wstęp</StyledHeading>
-      <StyledParagraph>
+      <StyledHeading color={color}>Wstęp</StyledHeading>
+      <StyledParagraph color={color}>
         Aplikacja XDADY ma za zadanie pomagać troszczyć się o nasze zdrowie
         poprzez dawanie dobrego żarełka na ruszt. Została ona stworzona na
         hackaton HackHeroes2020.
       </StyledParagraph>
-      <StyledSubHeading>Cel</StyledSubHeading>
-      <StyledParagraph>
+      <StyledSubHeading color={color}>Cel</StyledSubHeading>
+      <StyledParagraph color={color}>
         Naszą główną misją jest umożliwienie przygotowywania zdrowych i
         zbilansowanych posiłków bez wielkich zakupów - z produktów, które mamy w
         swojej kuchni. Dzięki prostocie działania aplikacji i opcji szybkiego

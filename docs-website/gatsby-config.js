@@ -24,10 +24,6 @@ module.exports = {
         },
       },
     },
-    {
-      resolve: 'gatsby-plugin-stylelint',
-      options: { files: ['**/*.js]'] },
-    },
     `gatsby-plugin-react-helmet`,
     'gatsby-plugin-root-import',
   ],
