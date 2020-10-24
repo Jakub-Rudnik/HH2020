@@ -1,40 +1,100 @@
-<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="58" height="58" viewBox="0 0 58 58">
-  <defs>
-    <linearGradient id="linear-gradient" x1="0.5" x2="0.5" y2="1" gradientUnits="objectBoundingBox">
-      <stop offset="0" stop-color="#a6c98a"/>
-      <stop offset="1" stop-color="#579f44"/>
-    </linearGradient>
-    <filter id="Path_30" x="0" y="0" width="58" height="58" filterUnits="userSpaceOnUse">
-      <feOffset dy="4" input="SourceAlpha"/>
-      <feGaussianBlur stdDeviation="5" result="blur"/>
-      <feFlood flood-color="#fff" flood-opacity="0.502"/>
-      <feComposite operator="in" in2="blur"/>
-      <feComposite in="SourceGraphic"/>
-    </filter>
-    <filter id="Path_31" x="12.683" y="8.37" width="32" height="40.502" filterUnits="userSpaceOnUse">
-      <feOffset dy="4" input="SourceAlpha"/>
-      <feGaussianBlur stdDeviation="5" result="blur-2"/>
-      <feFlood flood-color="#fff" flood-opacity="0.502"/>
-      <feComposite operator="in" in2="blur-2"/>
-      <feComposite in="SourceGraphic"/>
-    </filter>
-    <filter id="Path_32" x="8.37" y="12.683" width="40.502" height="32" filterUnits="userSpaceOnUse">
-      <feOffset dy="4" input="SourceAlpha"/>
-      <feGaussianBlur stdDeviation="5" result="blur-3"/>
-      <feFlood flood-color="#fff" flood-opacity="0.502"/>
-      <feComposite operator="in" in2="blur-3"/>
-      <feComposite in="SourceGraphic"/>
-    </filter>
-  </defs>
-  <g id="Group_5" data-name="Group 5" transform="translate(-21 -604)">
-    <g transform="matrix(1, 0, 0, 1, 21, 604)" filter="url(#Path_30)">
-      <path id="Path_30-2" data-name="Path 30" d="M14,0A14,14,0,1,1,0,14,14,14,0,0,1,14,0Z" transform="translate(15 11)" fill="url(#linear-gradient)"/>
-    </g>
-    <g transform="matrix(1, 0, 0, 1, 21, 604)" filter="url(#Path_31)">
-      <path id="Path_31-2" data-name="Path 31" d="M0,0V10.5" transform="translate(28.68 19.37)" fill="none" stroke="#fff" stroke-width="2"/>
-    </g>
-    <g transform="matrix(1, 0, 0, 1, 21, 604)" filter="url(#Path_32)">
-      <path id="Path_32-2" data-name="Path 32" d="M0,0V10.5" transform="translate(33.87 24.68) rotate(90)" fill="none" stroke="#fff" stroke-width="2"/>
-    </g>
-  </g>
-</svg>
+return (
+    <svg
+      xmlns="http://www.w3.org/2000/svg"
+      width="58"
+      height="58"
+      viewBox="0 0 58 58"
+    >
+      <defs>
+        <linearGradient
+          id="linear-gradient"
+          x1="0.5"
+          x2="0.5"
+          y2="1"
+          gradientUnits="objectBoundingBox"
+        >
+          <stop offset="0" stopColor="#a6c98a"></stop>
+          <stop offset="1" stopColor="#579f44"></stop>
+        </linearGradient>
+        <filter
+          id="Path_30"
+          width="58"
+          height="58"
+          x="0"
+          y="0"
+          filterUnits="userSpaceOnUse"
+        >
+          <feOffset dy="4"></feOffset>
+          <feGaussianBlur result="blur" stdDeviation="5"></feGaussianBlur>
+          <feFlood floodColor="#fff" floodOpacity="0.502"></feFlood>
+          <feComposite in2="blur" operator="in"></feComposite>
+          <feComposite in="SourceGraphic"></feComposite>
+        </filter>
+        <filter
+          id="Path_31"
+          width="32"
+          height="40.502"
+          x="12.683"
+          y="8.37"
+          filterUnits="userSpaceOnUse"
+        >
+          <feOffset dy="4"></feOffset>
+          <feGaussianBlur result="blur-2" stdDeviation="5"></feGaussianBlur>
+          <feFlood floodColor="#fff" floodOpacity="0.502"></feFlood>
+          <feComposite in2="blur-2" operator="in"></feComposite>
+          <feComposite in="SourceGraphic"></feComposite>
+        </filter>
+        <filter
+          id="Path_32"
+          width="40.502"
+          height="32"
+          x="8.37"
+          y="12.683"
+          filterUnits="userSpaceOnUse"
+        >
+          <feOffset dy="4"></feOffset>
+          <feGaussianBlur result="blur-3" stdDeviation="5"></feGaussianBlur>
+          <feFlood floodColor="#fff" floodOpacity="0.502"></feFlood>
+          <feComposite in2="blur-3" operator="in"></feComposite>
+          <feComposite in="SourceGraphic"></feComposite>
+        </filter>
+      </defs>
+      <g data-name="Group 5">
+        <g
+          filter="url(#Path_30)"
+          transform="translate(-21 -604) translate(21 604)"
+        >
+          <path
+            fill="url(#linear-gradient)"
+            d="M14 0A14 14 0 110 14 14 14 0 0114 0z"
+            data-name="Path 30"
+            transform="translate(15 11)"
+          ></path>
+        </g>
+        <g
+          filter="url(#Path_31)"
+          transform="translate(-21 -604) translate(21 604)"
+        >
+          <path
+            fill="none"
+            stroke="#fff"
+            strokeWidth="2"
+            d="M28.68 19.37v10.5"
+            data-name="Path 31"
+          ></path>
+        </g>
+        <g
+          filter="url(#Path_32)"
+          transform="translate(-21 -604) translate(21 604)"
+        >
+          <path
+            fill="none"
+            stroke="#fff"
+            strokeWidth="2"
+            d="M33.87 24.68h-10.5"
+            data-name="Path 32"
+          ></path>
+        </g>
+      </g>
+    </svg>
+  );

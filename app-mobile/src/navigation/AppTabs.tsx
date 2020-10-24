@@ -1,31 +1,46 @@
-/* eslint-disable @typescript-eslint/no-var-requires */
+/* eslint-disable react/display-name */
 import React from "react";
 import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
 import { NavigationContainer } from "@react-navigation/native";
 import { AppParamList } from "./AppParamList";
-import { TouchableIcon } from "../components/Interactive";
 import AddRecipe from "./../screens/AddRecipe/AddRecipe";
 import Profile from "./../screens/Profile/Profile";
 import Scan from "./ScanStack";
+import IconAdd from "./../components/Layout/icons/IconAdd";
+import IconScan from "./../components/Layout/icons/IconScan";
+import IconProfile from "./../components/Layout/icons/IconProfile";
 
 interface AppTabsProps {}
 
 const Tabs = createBottomTabNavigator<AppParamList>();
-
-const iconAddRecipe = require("../../assets/icons/Border/AddRecipeBorder.svg");
-const iconAddRecipeFilled = require("../../assets/icons/Filled/AddRecipe.svg");
-const iconScan = require("../../assets/icons/Border/ScanBorder.svg");
-const iconScanFilled = require("../../assets/icons/Filled/Scan.svg");
-const iconProfile = require("../../assets/icons/Border/ProfileBorder.svg");
-const iconProfileFilled = require("../../assets/icons/Filled/Profile.svg");
 
 const AppTabs: React.FC<AppTabsProps> = () => {
   return (
     <NavigationContainer>
       <Tabs.Navigator
         initialRouteName={"Scan"}
+        screenOptions={({ route }) => ({
+          tabBarIcon: ({ focused }) => {
+            if (route.name === "AddRecipe") {
+              return focused ? <IconAdd handleFill={"#C9EAC1"} /> : <IconAdd />;
+            } else if (route.name === "Scan") {
+              return focused ? (
+                <IconScan handleFill={"#C9EAC1"} />
+              ) : (
+                <IconScan />
+              );
+            } else if (route.name === "Profile") {
+              return focused ? (
+                <IconProfile handleFill={"#C9EAC1"} />
+              ) : (
+                <IconProfile />
+              );
+            }
+          },
+        })}
         tabBarOptions={{
-          activeTintColor: "lightblue",
+          showLabel: false,
+          activeTintColor: "#C9EAC1",
           inactiveTintColor: "gray",
         }}
       >

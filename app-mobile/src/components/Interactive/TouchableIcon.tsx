@@ -16,7 +16,6 @@ const TouchableIcon: React.FC<TouchableIconProps> = ({
   width,
 }) => {
   const bgColor = primmary ? "blue" : "red";
-  //   const iconColor = primmary ? "red" : "blue";
 
   const handleWidth = width ?? 50;
   const handleHeight = height ?? 50;
