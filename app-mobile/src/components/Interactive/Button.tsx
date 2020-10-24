@@ -14,8 +14,8 @@ const Button: React.FC<ButtonProps> = ({
   primmary,
   small,
 }) => {
-  const bgColor = primmary ? "blue" : "red";
-  const fontColor = primmary ? "red" : "blue";
+  const bgColor = primmary ? "green" : "white";
+  const fontColor = primmary ? "white" : "green";
 
   const handleWidth = small ? 184 : 225;
   const handleHeight = small ? 55 : 67;
@@ -24,13 +24,15 @@ const Button: React.FC<ButtonProps> = ({
     touchable: {
       height: handleHeight + 15,
       width: handleWidth + 15,
+      margin: 5,
     },
     container: {
-      height: handleHeight,
-      width: handleWidth,
+      flex: 0.95,
+      borderRadius: 25,
+      borderWidth: 3,
+      borderColor: "green",
       backgroundColor: bgColor,
-      flex: 1,
-      alignSelf: "center",
+      justifyContent: "center",
       alignItems: "center",
     },
     text: {
@@ -39,7 +41,14 @@ const Button: React.FC<ButtonProps> = ({
   });
 
   return (
-    <TouchableOpacity style={handleStyles.container} onPress={handleOnClick}>
+    <TouchableOpacity
+      style={handleStyles.touchable}
+      onPress={() => {
+        if (handleOnClick) {
+          handleOnClick();
+        }
+      }}
+    >
       <View style={handleStyles.container}>
         <Text style={handleStyles.text}>{text}</Text>
       </View>

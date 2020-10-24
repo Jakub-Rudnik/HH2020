@@ -1,3 +1,4 @@
+import Button from "./Button";
 import TouchableIcon from "./TouchableIcon";
 
-export { TouchableIcon };
+export { Button, TouchableIcon };
