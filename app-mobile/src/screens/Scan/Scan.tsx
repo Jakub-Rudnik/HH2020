@@ -1,16 +1,20 @@
 import React, { useState, useEffect, useRef } from "react";
-import { Text, View, TouchableOpacity } from "react-native";
+import { Text } from "react-native";
 import * as Permission from "expo-permissions";
 import * as ImageManipulator from "expo-image-manipulator";
 import * as tf from "@tensorflow/tfjs";
-import * as cocossd from "@tensorflow-models/coco-ssd";
-import { decodeJpeg } from "@tensorflow/tfjs-react-native";
+import { bundleResourceIO, decodeJpeg } from "@tensorflow/tfjs-react-native";
 import { Camera } from "expo-camera";
+import { TouchableIcon } from "../../components/Interactive";
+import { Block } from "../../components/Layout";
 
-const Home = (): JSX.Element => {
+const Scan = (): JSX.Element => {
+  const MODELJSON = "../../../assets/model/model.json";
+  const MODELBIN = "../../../assets/model/group1-shard1of1.bin";
+
   const [hasPermission, setHasPermission] = useState<boolean>(false);
   const [isTfReady, setIsTfReady] = useState<boolean>(false);
-  const [tfModel, setTfModel] = useState<cocossd.ObjectDetection | null>(null);
+  const [tfModel, setTfModel] = useState<tf.GraphModel | null>(null);
   const [type, setType] = useState(Camera.Constants.Type.back);
   const cameraRef = useRef<Camera>(null);
 
@@ -55,10 +59,20 @@ const Home = (): JSX.Element => {
           console.log("Photo has been converted to unit8array.");
           const imageTensor = decodeJpeg(raw);
           console.log("Photo has been decoded to a 3D Tensor.");
+          const image4d = imageTensor.expandDims(0);
 
-          const predictions = await model.detect(imageTensor);
+          const predictions:
+            | tf.Tensor<tf.Rank>
+            | tf.Tensor<tf.Rank>[] = await model.executeAsync(image4d);
 
-          console.log(predictions);
+          if (Array.isArray(predictions) && predictions[2]) {
+            const element = predictions[2].arraySync();
+            if (Array.isArray(element) && element[0]) {
+              console.log(element[0]);
+            }
+          }
+
+          // console.log(predictions[0].dataSync());
         } else {
           console.log("Cant properly resize photo with base64 as output");
         }
@@ -80,8 +94,18 @@ const Home = (): JSX.Element => {
         await tf.ready();
         console.log("Tenserflow framework is ready to work!");
         try {
+          console.log("Loading files");
+
+          // eslint-disable-next-line @typescript-eslint/no-var-requires
+          const modelJson = require(MODELJSON);
+          // eslint-disable-next-line @typescript-eslint/no-var-requires
+          const modelWeights = require(MODELBIN);
+
           console.log("Loading ai model");
-          const model = await cocossd.load();
+          const model = await tf.loadGraphModel(
+            bundleResourceIO(modelJson, modelWeights)
+          );
+
           setTfModel(model);
           console.log("Succes");
         } catch (error) {
@@ -105,51 +129,25 @@ const Home = (): JSX.Element => {
   }
 
   return (
-    <View style={{ flex: 1 }}>
-      <Camera ref={cameraRef} style={{ flex: 1 }} type={type}>
-        <View
-          style={{
-            flex: 1,
-            alignItems: "center",
-            justifyContent: "space-between",
-            backgroundColor: "transparent",
-            flexDirection: "column",
+    <Camera ref={cameraRef} style={{ flex: 1 }} type={type}>
+      <Block justifyContent={"space-between"} flexDirection={"column"}>
+        <TouchableIcon
+          handleOnPress={() => {
+            setType(
+              type === Camera.Constants.Type.back
+                ? Camera.Constants.Type.front
+                : Camera.Constants.Type.back
+            );
           }}
-        >
-          <TouchableOpacity
-            style={{
-              flex: 0.7,
-              alignSelf: "center",
-              alignItems: "center",
-            }}
-            onPress={() => {
-              setType(
-                type === Camera.Constants.Type.back
-                  ? Camera.Constants.Type.front
-                  : Camera.Constants.Type.back
-              );
-            }}
-          >
-            <Text style={{ fontSize: 18, marginBottom: 10, color: "white" }}>
-              Flip
-            </Text>
-          </TouchableOpacity>
-          <TouchableOpacity
-            style={{
-              flex: 0.7,
-              alignSelf: "center",
-              alignItems: "center",
-            }}
-            onPress={detectObjects}
-          >
-            <Text style={{ fontSize: 18, marginBottom: 10, color: "white" }}>
-              Scan
-            </Text>
-          </TouchableOpacity>
-        </View>
-      </Camera>
-    </View>
+        />
+        <TouchableIcon
+          handleOnPress={() => {
+            detectObjects();
+          }}
+        />
+      </Block>
+    </Camera>
   );
 };
 
-export default Home;
+export default Scan;

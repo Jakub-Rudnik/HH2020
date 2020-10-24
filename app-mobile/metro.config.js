@@ -14,7 +14,7 @@ module.exports = {
     // Change 2 (add 'bin' to assetExts)
     assetExts: [...defaultAssetExts, 'bin'],
     sourceExts: ['js', 'json', 'ts', 'tsx', 'jsx'],
-    // Change 3 (add platform_node to blacklist)
+    // Change 3 (add platform_node to blacklist) 
     blacklistRE: blacklist([/platform_node/])
   },
 };
