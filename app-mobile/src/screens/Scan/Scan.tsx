@@ -79,7 +79,7 @@ const Scan = (): JSX.Element => {
       } catch (e) {
         console.log("Error with detecting: " + e);
       } finally {
-        console.log("! Done !");
+        console.log("! Done  !");
       }
     } else {
       console.log("Problem with model or photo");

@@ -20,6 +20,9 @@
   },
   "dependencies": {
     "@react-native-community/async-storage": "^1.12.1",
+    "@react-navigation/bottom-tabs": "^5.9.2",
+    "@react-navigation/native": "^5.7.6",
+    "@react-navigation/stack": "^5.9.3",
     "@tensorflow-models/coco-ssd": "^2.1.0",
     "@tensorflow/tfjs": "^2.6.0",
     "@tensorflow/tfjs-react-native": "^0.4.0",
@@ -35,7 +38,12 @@
     "react-dom": "16.13.1",
     "react-native": "https://github.com/expo/react-native/archive/sdk-39.0.3.tar.gz",
     "react-native-fs": "^2.16.6",
-    "react-native-web": "~0.13.12"
+    "react-native-web": "~0.13.12",
+    "react-native-gesture-handler": "~1.7.0",
+    "react-native-reanimated": "~1.13.0",
+    "react-native-screens": "~2.10.1",
+    "react-native-safe-area-context": "3.1.4",
+    "@react-native-community/masked-view": "0.1.10"
   },
   "devDependencies": {
     "@types/expo": "^33.0.1",

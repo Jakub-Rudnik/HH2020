@@ -1,0 +1,18 @@
+<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="59.333" height="58" viewBox="0 0 59.333 58">
+  <defs>
+    <linearGradient id="linear-gradient" x1="0.5" x2="0.5" y2="1" gradientUnits="objectBoundingBox">
+      <stop offset="0" stop-color="#a6c98a"/>
+      <stop offset="1" stop-color="#579f44"/>
+    </linearGradient>
+    <filter id="Profile" x="0" y="0" width="59.333" height="58" filterUnits="userSpaceOnUse">
+      <feOffset dy="4" input="SourceAlpha"/>
+      <feGaussianBlur stdDeviation="5" result="blur"/>
+      <feFlood flood-color="#fff" flood-opacity="0.502"/>
+      <feComposite operator="in" in2="blur"/>
+      <feComposite in="SourceGraphic"/>
+    </filter>
+  </defs>
+  <g transform="matrix(1, 0, 0, 1, 0, 0)" filter="url(#Profile)">
+    <path id="Profile-2" data-name="Profile" d="M25.484,6A5.567,5.567,0,0,0,20.8,8.207a9.035,9.035,0,0,0-1.688,5.646,8.6,8.6,0,0,0,2.75,6.771.865.865,0,0,1,.25.854l-.479,1a1.769,1.769,0,0,1-.677.781,11.843,11.843,0,0,1-1.886.8l-2.635.854q-2.573.833-2.74.917A5.183,5.183,0,0,0,11.4,27.353q-.583,1.313-.583,6.646H40.151q0-5.333-.583-6.646a5.183,5.183,0,0,0-2.292-1.521q-.167-.083-2.74-.917L31.9,24.062a11.846,11.846,0,0,1-1.885-.8,1.771,1.771,0,0,1-.677-.781l-.479-1a.865.865,0,0,1,.25-.854,8.6,8.6,0,0,0,2.75-6.771,9.035,9.035,0,0,0-1.687-5.646A5.567,5.567,0,0,0,25.484,6Z" transform="translate(4.18 5)" fill="url(#linear-gradient)"/>
+  </g>
+</svg>

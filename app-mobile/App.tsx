@@ -1,6 +1,6 @@
 import React from "react";
-import Home from "./src/screens/Scan/Scan";
+import { Providers } from "./src/routes-and-providers/Providers";
 
 export default function App(): JSX.Element {
-  return <Home />;
+  return <Providers />;
 }
