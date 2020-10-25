@@ -1,4 +1,5 @@
-import React, { createContext } from "react";
+import React, { createContext, useState } from "react";
+import * as tf from "@tensorflow/tfjs";
 
 interface AppProviderProps {
   children?: React.ReactNode;
@@ -6,18 +7,29 @@ interface AppProviderProps {
 
 export const AppStorage = createContext<{
   isAppLoading: boolean;
-  scannedIngredients: Array<string>;
+  aiModel: tf.GraphModel | null;
+  changeAiModel: (model: tf.GraphModel) => void;
 }>({
   isAppLoading: true,
-  scannedIngredients: [],
+  aiModel: null,
+  changeAiModel: () => {
+    return null;
+  },
 });
 
 export const AppProvider: React.FC<AppProviderProps> = ({ children }) => {
+  const [aiModel, setAiModel] = useState<tf.GraphModel | null>(null);
+
+  const handleChangeAiModel = (model: tf.GraphModel) => {
+    setAiModel(model);
+  };
+
   return (
     <AppStorage.Provider
       value={{
         isAppLoading: false,
-        scannedIngredients: [],
+        aiModel: aiModel,
+        changeAiModel: handleChangeAiModel,
       }}
     >
       {children}

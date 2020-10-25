@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from "react";
+import React, { useState, useEffect, useRef, useContext } from "react";
 import { Text } from "react-native";
 import * as Permission from "expo-permissions";
 import * as ImageManipulator from "expo-image-manipulator";
@@ -7,6 +7,7 @@ import { bundleResourceIO, decodeJpeg } from "@tensorflow/tfjs-react-native";
 import { Camera } from "expo-camera";
 import { TouchableIcon } from "../../components/Interactive";
 import { Block } from "../../components/Layout";
+import { AppStorage } from "../../routes-and-providers/AppProvider";
 
 const Scan = (): JSX.Element => {
   const MODELJSON = "../../../assets/model/model.json";
@@ -88,25 +89,34 @@ const Scan = (): JSX.Element => {
   // -----------------------------------------------------
   // -----------------------------------------------------
 
+  const { aiModel, changeAiModel } = useContext(AppStorage);
+
   useEffect(() => {
     (async () => {
       if (!isTfReady || tfModel == null) {
         await tf.ready();
         console.log("Tenserflow framework is ready to work!");
         try {
-          console.log("Loading files");
-
-          // eslint-disable-next-line @typescript-eslint/no-var-requires
-          const modelJson = require(MODELJSON);
-          // eslint-disable-next-line @typescript-eslint/no-var-requires
-          const modelWeights = require(MODELBIN);
-
           console.log("Loading ai model");
-          const model = await tf.loadGraphModel(
-            bundleResourceIO(modelJson, modelWeights)
-          );
+          if (aiModel === null) {
+            console.log("From file");
+            // eslint-disable-next-line @typescript-eslint/no-var-requires
+            const modelJson = require(MODELJSON);
+            // eslint-disable-next-line @typescript-eslint/no-var-requires
+            const modelWeights = require(MODELBIN);
 
-          setTfModel(model);
+            const model = await tf.loadGraphModel(
+              bundleResourceIO(modelJson, modelWeights)
+            );
+
+            changeAiModel(model);
+            setTfModel(model);
+          } else {
+            console.log("From context");
+            const model = aiModel;
+            setTfModel(model);
+          }
+
           console.log("Succes");
         } catch (error) {
           console.log("Failed with: " + error);
