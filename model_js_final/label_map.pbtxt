@@ -1,0 +1,81 @@
+item {
+    name: "cukier",
+    id: 1,
+    display_name: "cukier"
+}
+item {
+    name: "cukinia",
+    id: 2,
+    display_name: "cukinia"
+}
+item {
+    name: "jajkaw",
+    id: 3,
+    display_name: "jajkaw"
+}
+item {
+    name: "makaron",
+    id: 4,
+    display_name: "makaron"
+}
+item {
+    name: "maslo",
+    id: 5,
+    display_name: "maslo"
+}
+item {
+    name: "maka",
+    id: 6,
+    display_name: "maka"
+}
+item {
+    name: "pomidor",
+    id: 7,
+    display_name: "pomidor"
+}
+item {
+    name: "ser",
+    id: 8,
+    display_name: "ser"
+}
+item {
+    name: "kurczak",
+    id: 9,
+    display_name: "kurczak"
+}
+item {
+    name: "mleko",
+    id: 10,
+    display_name: "mleko"
+}
+item {
+    name: "ogorek",
+    id: 11,
+    display_name: "ogorek"
+}
+item {
+    name: "kielbasa",
+    id: 12,
+    display_name: "kielbasa"
+}
+item {
+    name: "ryz",
+    id: 13,
+    display_name: "ryz"
+}
+item {
+    name: "salata",
+    id: 14,
+    display_name: "salata"
+}
+item {
+    name: "smietana",
+    id: 15,
+    display_name: "smietana"
+}
+item {
+    name: "wolowinaw",
+    id: 16,
+    display_name: "wolowinaw"
+}
+
