@@ -6,8 +6,8 @@ import * as ImageManipulator from "expo-image-manipulator";
 import * as tf from "@tensorflow/tfjs";
 import { bundleResourceIO, decodeJpeg } from "@tensorflow/tfjs-react-native";
 import { Camera } from "expo-camera";
-import { TouchableIcon } from "../../components/Interactive";
-import { BackgroundImage, Block } from "../../components/Layout";
+import { Button, TouchableIcon } from "../../components/Interactive";
+import { BackgroundImage, Block, Rounded } from "../../components/Layout";
 import { AppStorage } from "../../routes-and-providers/AppProvider";
 import Loading from "../Loading";
 
@@ -19,6 +19,7 @@ const Scan = (): JSX.Element => {
   const [isTfReady, setIsTfReady] = useState<boolean>(false);
   const [tfModel, setTfModel] = useState<tf.GraphModel | null>(null);
   const [type, setType] = useState(Camera.Constants.Type.back);
+  const [isScaning, setIsScaning] = useState<boolean>(false);
   const cameraRef = useRef<Camera>(null);
 
   const icon1 = require("./../../../assets/icons/Icon1.png");
@@ -47,48 +48,52 @@ const Scan = (): JSX.Element => {
   };
 
   const detectObjects = async () => {
-    console.log("1/2 Capture photo!");
-    const photo = await capturePhoto();
+    if (!isScaning) {
+      setIsScaning(true);
+      console.log("1/2 Capture photo!");
+      const photo = await capturePhoto();
 
-    console.log("2/2 Loading model!");
-    const model = tfModel;
+      console.log("2/2 Loading model!");
+      const model = tfModel;
 
-    if (photo && model) {
-      try {
-        console.log("! Starting !");
-        const resPhoto = await resizePhoto(photo.uri);
-        console.log("Photo has been resized.");
+      if (photo && model) {
+        try {
+          console.log("! Starting !");
+          const resPhoto = await resizePhoto(photo.uri);
+          console.log("Photo has been resized.");
 
-        if (resPhoto.base64) {
-          const imgBuffer = tf.util.encodeString(resPhoto.base64, "base64")
-            .buffer;
-          console.log("Photo has been encoded.");
-          const raw = new Uint8Array(imgBuffer);
-          console.log("Photo has been converted to unit8array.");
-          const imageTensor = decodeJpeg(raw);
-          console.log("Photo has been decoded to a 3D Tensor.");
-          const image4d = imageTensor.expandDims(0);
+          if (resPhoto.base64) {
+            const imgBuffer = tf.util.encodeString(resPhoto.base64, "base64")
+              .buffer;
+            console.log("Photo has been encoded.");
+            const raw = new Uint8Array(imgBuffer);
+            console.log("Photo has been converted to unit8array.");
+            const imageTensor = decodeJpeg(raw);
+            console.log("Photo has been decoded to a 3D Tensor.");
+            const image4d = imageTensor.expandDims(0);
 
-          const predictions:
-            | tf.Tensor<tf.Rank>
-            | tf.Tensor<tf.Rank>[] = await model.executeAsync(image4d);
+            const predictions:
+              | tf.Tensor<tf.Rank>
+              | tf.Tensor<tf.Rank>[] = await model.executeAsync(image4d);
 
-          if (Array.isArray(predictions) && predictions[2]) {
-            const element = predictions[2].arraySync();
-            if (Array.isArray(element) && element[0]) {
-              console.log(element[0]);
+            if (Array.isArray(predictions) && predictions[2]) {
+              const element = predictions[2].arraySync();
+              if (Array.isArray(element) && element[0]) {
+                console.log(element[0]);
+              }
             }
+          } else {
+            console.log("Cant properly resize photo with base64 as output");
           }
-        } else {
-          console.log("Cant properly resize photo with base64 as output");
+        } catch (e) {
+          console.log("Error with detecting: " + e);
+        } finally {
+          setIsScaning(false);
+          console.log("! Done  !");
         }
-      } catch (e) {
-        console.log("Error with detecting: " + e);
-      } finally {
-        console.log("! Done  !");
+      } else {
+        console.log("Problem with model or photo");
       }
-    } else {
-      console.log("Problem with model or photo");
     }
   };
 
@@ -192,6 +197,25 @@ const Scan = (): JSX.Element => {
           <TouchableIcon
             icon={icon2}
             reversed
+            handleOnClick={() => {
+              // end
+            }}
+          />
+        </View>
+        <View
+          style={{
+            height: "25%",
+            flex: 1,
+            justifyContent: "flex-end",
+            alignItems: "center",
+            flexDirection: "column",
+          }}
+        >
+          {isScaning && <Rounded>Skanowanie...</Rounded>}
+          <Button
+            primmary
+            small
+            text={"Skanuj!"}
             handleOnClick={() => {
               detectObjects();
             }}
