@@ -1,13 +1,15 @@
+/* eslint-disable @typescript-eslint/no-var-requires */
 import React, { useState, useEffect, useRef, useContext } from "react";
-import { Text } from "react-native";
+import { Text, View } from "react-native";
 import * as Permission from "expo-permissions";
 import * as ImageManipulator from "expo-image-manipulator";
 import * as tf from "@tensorflow/tfjs";
 import { bundleResourceIO, decodeJpeg } from "@tensorflow/tfjs-react-native";
 import { Camera } from "expo-camera";
 import { TouchableIcon } from "../../components/Interactive";
-import { Block } from "../../components/Layout";
+import { BackgroundImage, Block } from "../../components/Layout";
 import { AppStorage } from "../../routes-and-providers/AppProvider";
+import Loading from "../Loading";
 
 const Scan = (): JSX.Element => {
   const MODELJSON = "../../../assets/model/model.json";
@@ -18,6 +20,11 @@ const Scan = (): JSX.Element => {
   const [tfModel, setTfModel] = useState<tf.GraphModel | null>(null);
   const [type, setType] = useState(Camera.Constants.Type.back);
   const cameraRef = useRef<Camera>(null);
+
+  const icon1 = require("./../../../assets/icons/Icon1.png");
+  const icon2 = require("./../../../assets/icons/Icon2.png");
+
+  const { aiModel, changeAiModel } = useContext(AppStorage);
 
   // -----------------------------------------------------
   // Utilyty functions
@@ -72,8 +79,6 @@ const Scan = (): JSX.Element => {
               console.log(element[0]);
             }
           }
-
-          // console.log(predictions[0].dataSync());
         } else {
           console.log("Cant properly resize photo with base64 as output");
         }
@@ -86,10 +91,14 @@ const Scan = (): JSX.Element => {
       console.log("Problem with model or photo");
     }
   };
-  // -----------------------------------------------------
-  // -----------------------------------------------------
 
-  const { aiModel, changeAiModel } = useContext(AppStorage);
+  const askPermission = async () => {
+    const { status } = await Permission.askAsync(Permission.CAMERA);
+    console.log("Permission to camera: " + status);
+    setHasPermission(status === "granted");
+  };
+  // -----------------------------------------------------
+  // -----------------------------------------------------
 
   useEffect(() => {
     (async () => {
@@ -100,9 +109,7 @@ const Scan = (): JSX.Element => {
           console.log("Loading ai model");
           if (aiModel === null) {
             console.log("From file");
-            // eslint-disable-next-line @typescript-eslint/no-var-requires
             const modelJson = require(MODELJSON);
-            // eslint-disable-next-line @typescript-eslint/no-var-requires
             const modelWeights = require(MODELBIN);
 
             const model = await tf.loadGraphModel(
@@ -127,34 +134,69 @@ const Scan = (): JSX.Element => {
       }
 
       if (!hasPermission) {
-        const { status } = await Permission.askAsync(Permission.CAMERA);
-        console.log("Permission to camera: " + status);
-        setHasPermission(status === "granted");
+        askPermission().catch((e) => console.log(e));
       }
     })();
-  }, [hasPermission, isTfReady, tfModel]);
+  }, [aiModel, changeAiModel, hasPermission, isTfReady, tfModel]);
+
+  if (isTfReady === false) {
+    return <Loading />;
+  }
 
   if (hasPermission === false) {
-    return <Text>No access to camera</Text>;
+    return (
+      <Text>nocamera123</Text>
+      // <Block flexDirection={"column"} justifyContent={"space-between"}>
+      //   <BackgroundImage reversed />
+      //   <Block>
+      //     <Text>Brak uprawnień do aparatu!</Text>;
+      //     <Button
+      //       handleOnClick={() => {
+      //         askPermission();
+      //       }}
+      //       primmary
+      //       small
+      //       text={"Zapytaj"}
+      //     />
+      //   </Block>
+      // </Block>
+    );
   }
 
   return (
-    <Camera ref={cameraRef} style={{ flex: 1 }} type={type}>
-      <Block justifyContent={"space-between"} flexDirection={"column"}>
-        <TouchableIcon
-          handleOnPress={() => {
-            setType(
-              type === Camera.Constants.Type.back
-                ? Camera.Constants.Type.front
-                : Camera.Constants.Type.back
-            );
+    <Camera
+      ref={cameraRef}
+      style={{ width: "100%", height: "100%" }}
+      type={type}
+    >
+      <Block flexDirection={"column"} justifyContent={"flex-start"}>
+        <View style={{ height: "25%" }} />
+        <View
+          style={{
+            width: "100%",
+            flex: 1,
+            flexDirection: "row",
+            justifyContent: "space-between",
           }}
-        />
-        <TouchableIcon
-          handleOnPress={() => {
-            detectObjects();
-          }}
-        />
+        >
+          <TouchableIcon
+            icon={icon1}
+            handleOnClick={() => {
+              setType(
+                type === Camera.Constants.Type.back
+                  ? Camera.Constants.Type.front
+                  : Camera.Constants.Type.back
+              );
+            }}
+          />
+          <TouchableIcon
+            icon={icon2}
+            reversed
+            handleOnClick={() => {
+              detectObjects();
+            }}
+          />
+        </View>
       </Block>
     </Camera>
   );

@@ -1,23 +1,22 @@
 import React from "react";
-import { View, Text, ActivityIndicator, StyleSheet } from "react-native";
+import { Text, ActivityIndicator, StyleSheet } from "react-native";
+import { BackgroundImage, Block } from "../components/Layout";
 
 interface LoadingProps {}
 
 const Loading: React.FC<LoadingProps> = () => {
   return (
-    <View style={styles.container}>
-      <Text style={styles.text}>Loading</Text>
-      <ActivityIndicator size="large" />
-    </View>
+    <Block flexDirection={"column"} justifyContent={"space-between"}>
+      <BackgroundImage reversed />
+      <Block flexDirection={"column"}>
+        <Text style={styles.text}>Ładowanie</Text>
+        <ActivityIndicator size="large" color={"green"} />
+      </Block>
+    </Block>
   );
 };
 
 const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    alignItems: "center",
-    justifyContent: "center",
-  },
   text: {
     margin: 25,
     fontSize: 18,

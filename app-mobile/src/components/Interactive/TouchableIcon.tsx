@@ -1,53 +1,63 @@
 import React from "react";
-import { TouchableOpacity, View, StyleSheet, Text } from "react-native";
+import {
+  Image,
+  View,
+  StyleSheet,
+  ImageURISource,
+  TouchableOpacity,
+} from "react-native";
 
 interface TouchableIconProps {
-  icon?: string;
-  handleOnPress?: () => void;
+  icon: ImageURISource;
+  handleOnClick?: () => void;
   height?: number;
   width?: number;
   primmary?: boolean;
+  reversed?: boolean;
 }
 
 const TouchableIcon: React.FC<TouchableIconProps> = ({
-  handleOnPress,
+  icon,
+  handleOnClick,
   height,
   primmary,
+  reversed,
   width,
 }) => {
-  const bgColor = primmary ? "blue" : "red";
-
-  const handleWidth = width ?? 50;
-  const handleHeight = height ?? 50;
+  const bgColor = primmary ? "blue" : "white";
+  const handleWidth = width ?? 75;
+  const handleHeight = height ?? 55;
 
   const handleStyles = StyleSheet.create({
-    container: {
+    touchable: {
+      borderBottomLeftRadius: reversed ? 25 : 0,
+      borderTopLeftRadius: reversed ? 25 : 0,
+      borderTopRightRadius: reversed ? 0 : 25,
+      borderBottomRightRadius: reversed ? 0 : 25,
+      backgroundColor: bgColor,
       width: handleWidth,
       height: handleHeight,
-      backgroundColor: "red",
     },
-    touchable: {
-      backgroundColor: bgColor,
+    container: {
       flex: 1,
-      alignSelf: "center",
+      justifyContent: "center",
       alignItems: "center",
     },
   });
 
   return (
-    <View style={handleStyles.container}>
-      <TouchableOpacity
-        style={handleStyles.touchable}
-        onPress={() => {
-          if (handleOnPress) {
-            handleOnPress();
-          }
-        }}
-      >
-        <Text>123</Text>
-        {/* svg */}
-      </TouchableOpacity>
-    </View>
+    <TouchableOpacity
+      style={handleStyles.touchable}
+      onPress={() => {
+        if (handleOnClick) {
+          handleOnClick();
+        }
+      }}
+    >
+      <View style={handleStyles.container}>
+        <Image source={icon} />
+      </View>
+    </TouchableOpacity>
   );
 };
 
