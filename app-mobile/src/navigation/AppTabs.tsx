@@ -6,9 +6,7 @@ import { AppParamList } from "./AppParamList";
 import AddRecipe from "./../screens/AddRecipe/AddRecipe";
 import Profile from "./../screens/Profile/Profile";
 import Scan from "./ScanStack";
-import IconAdd from "./../components/Layout/icons/IconAdd";
-import IconScan from "./../components/Layout/icons/IconScan";
-import IconProfile from "./../components/Layout/icons/IconProfile";
+import { IconAdd, IconScan, IconProfile } from "./../components/Layout/icons/";
 
 interface AppTabsProps {}
 
