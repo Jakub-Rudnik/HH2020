@@ -10,8 +10,9 @@ import { Button, TouchableIcon } from "../../components/Interactive";
 import { BackgroundImage, Block, Rounded } from "../../components/Layout";
 import { AppStorage } from "../../routes-and-providers/AppProvider";
 import Loading from "../Loading";
+import { ScanStackNavProps } from "../../navigation/ScanParamList";
 
-const Scan = (): JSX.Element => {
+const Scan = ({ navigation }: ScanStackNavProps<"Scan">): JSX.Element => {
   const MODELJSON = "../../../assets/model/model.json";
   const MODELBIN = "../../../assets/model/group1-shard1of1.bin";
 
@@ -41,8 +42,8 @@ const Scan = (): JSX.Element => {
   const resizePhoto = async (photo: string) => {
     const manipulatedImage = await ImageManipulator.manipulateAsync(
       photo,
-      [{ resize: { height: 300, width: 300 } }],
-      { compress: 0.7, base64: true }
+      [{ resize: { height: 640, width: 640 } }],
+      { compress: 0.9, base64: true }
     );
     return manipulatedImage;
   };
@@ -77,10 +78,15 @@ const Scan = (): JSX.Element => {
               | tf.Tensor<tf.Rank>[] = await model.executeAsync(image4d);
 
             if (Array.isArray(predictions) && predictions[2]) {
-              const element = predictions[2].arraySync();
-              if (Array.isArray(element) && element[0]) {
-                console.log(element[0]);
-              }
+              const scores = predictions[1].dataSync();
+              const names = predictions[7].dataSync();
+
+              scores.forEach((e: number, i: number) => {
+                if (e > 0.3) {
+                  console.log("Trafne: " + names[i]);
+                  console.log(e);
+                }
+              });
             }
           } else {
             console.log("Cant properly resize photo with base64 as output");
@@ -150,19 +156,18 @@ const Scan = (): JSX.Element => {
 
   if (hasPermission === false) {
     return (
-      <Text>nocamera123</Text>
       // <Block flexDirection={"column"} justifyContent={"space-between"}>
       //   <BackgroundImage reversed />
       //   <Block>
       //     <Text>Brak uprawnień do aparatu!</Text>;
-      //     <Button
-      //       handleOnClick={() => {
-      //         askPermission();
-      //       }}
-      //       primmary
-      //       small
-      //       text={"Zapytaj"}
-      //     />
+      <Button
+        handleOnClick={() => {
+          askPermission();
+        }}
+        primmary
+        small
+        text={"Zapytaj"}
+      />
       //   </Block>
       // </Block>
     );
@@ -198,7 +203,7 @@ const Scan = (): JSX.Element => {
             icon={icon2}
             reversed
             handleOnClick={() => {
-              // end
+              navigation.navigate("Accept");
             }}
           />
         </View>

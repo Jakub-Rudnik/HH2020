@@ -9,12 +9,14 @@ export const AppStorage = createContext<{
   isAppLoading: boolean;
   aiModel: tf.GraphModel | null;
   changeAiModel: (model: tf.GraphModel) => void;
+  listOfScannedItems: Array<string>;
 }>({
   isAppLoading: true,
   aiModel: null,
   changeAiModel: () => {
     return null;
   },
+  listOfScannedItems: [],
 });
 
 export const AppProvider: React.FC<AppProviderProps> = ({ children }) => {
@@ -30,6 +32,7 @@ export const AppProvider: React.FC<AppProviderProps> = ({ children }) => {
         isAppLoading: false,
         aiModel: aiModel,
         changeAiModel: handleChangeAiModel,
+        listOfScannedItems: [],
       }}
     >
       {children}
