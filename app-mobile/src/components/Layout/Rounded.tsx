@@ -1,5 +1,6 @@
 import React from "react";
 import { View, Text, StyleSheet } from "react-native";
+import { theme } from "../../utilities/constants/theme";
 
 interface RoundedProps {
   children?: React.ReactNode;
@@ -7,27 +8,29 @@ interface RoundedProps {
 
 const handleStyles = StyleSheet.create({
   container: {
-    backgroundColor: "white",
-    width: 115,
     height: 35,
-    borderRadius: 50,
-    justifyContent: "center",
+    width: 115,
     alignItems: "center",
-    borderWidth: 2,
-    borderColor: "green",
-    shadowColor: "black",
+    justifyContent: "center",
     margin: 5,
+    borderRadius: 50,
+    borderWidth: 2,
+    borderColor: theme.COLORS.primmary,
+    backgroundColor: theme.COLORS.white,
+
+    // Shadow
+    shadowColor: theme.COLORS.black,
     shadowOffset: {
       width: 0,
       height: 2,
     },
     shadowOpacity: 0.23,
     shadowRadius: 2.62,
-
     elevation: 4,
   },
   text: {
-    color: "green",
+    fontSize: theme.SIZES.small,
+    color: theme.COLORS.black,
   },
 });
 

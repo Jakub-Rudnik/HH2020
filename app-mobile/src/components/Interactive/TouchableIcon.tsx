@@ -6,14 +6,16 @@ import {
   ImageURISource,
   TouchableOpacity,
 } from "react-native";
+import { theme } from "../../utilities/constants/theme";
 
 interface TouchableIconProps {
   icon: ImageURISource;
+
   handleOnClick?: () => void;
-  height?: number;
-  width?: number;
   primmary?: boolean;
   reversed?: boolean;
+  height?: number;
+  width?: number;
 }
 
 const TouchableIcon: React.FC<TouchableIconProps> = ({
@@ -24,19 +26,23 @@ const TouchableIcon: React.FC<TouchableIconProps> = ({
   reversed,
   width,
 }) => {
-  const bgColor = primmary ? "blue" : "white";
+  const { COLORS } = theme;
+
+  const bgColor = primmary ? COLORS.primmary : COLORS.white;
   const handleWidth = width ?? 75;
   const handleHeight = height ?? 55;
 
   const handleStyles = StyleSheet.create({
     touchable: {
+      width: handleWidth,
+      height: handleHeight,
+
+      borderBottomRightRadius: reversed ? 0 : 25,
       borderBottomLeftRadius: reversed ? 25 : 0,
       borderTopLeftRadius: reversed ? 25 : 0,
       borderTopRightRadius: reversed ? 0 : 25,
-      borderBottomRightRadius: reversed ? 0 : 25,
+
       backgroundColor: bgColor,
-      width: handleWidth,
-      height: handleHeight,
     },
     container: {
       flex: 1,

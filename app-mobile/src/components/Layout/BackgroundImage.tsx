@@ -15,7 +15,6 @@ const BackgroundImage: React.FC<BackgroundImageProps> = ({
     container: {
       width: "120%",
       height: height ?? "30%",
-      backgroundColor: "green",
       transform: reversed
         ? [
             { scaleX: -1 },

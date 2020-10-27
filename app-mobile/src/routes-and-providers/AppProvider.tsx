@@ -1,38 +1,38 @@
 import React, { createContext, useState } from "react";
-import * as tf from "@tensorflow/tfjs";
+import { GraphModel } from "@tensorflow/tfjs";
 
 interface AppProviderProps {
   children?: React.ReactNode;
 }
 
 export const AppStorage = createContext<{
-  isAppLoading: boolean;
-  aiModel: tf.GraphModel | null;
-  changeAiModel: (model: tf.GraphModel) => void;
+  setAiModel: (model: GraphModel) => void;
+  aiModel: GraphModel | null;
+
   listOfScannedItems: Array<string>;
+  isAppLoading: boolean;
 }>({
-  isAppLoading: true,
+  setAiModel: () => null,
   aiModel: null,
-  changeAiModel: () => {
-    return null;
-  },
+
   listOfScannedItems: [],
+  isAppLoading: true,
 });
 
 export const AppProvider: React.FC<AppProviderProps> = ({ children }) => {
-  const [aiModel, setAiModel] = useState<tf.GraphModel | null>(null);
+  const [aiModel, handleSetAiModel] = useState<GraphModel | null>(null);
 
-  const handleChangeAiModel = (model: tf.GraphModel) => {
-    setAiModel(model);
+  const handleChangeAiModel = (model: GraphModel) => {
+    handleSetAiModel(model);
   };
 
   return (
     <AppStorage.Provider
       value={{
-        isAppLoading: false,
+        setAiModel: handleChangeAiModel,
         aiModel: aiModel,
-        changeAiModel: handleChangeAiModel,
         listOfScannedItems: [],
+        isAppLoading: false,
       }}
     >
       {children}

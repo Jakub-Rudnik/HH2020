@@ -1,8 +1,10 @@
 import React from "react";
 import { TouchableOpacity, View, Text, StyleSheet } from "react-native";
+import { theme } from "../../utilities/constants/theme";
 
 interface ButtonProps {
   text: string;
+
   handleOnClick?: () => void;
   primmary?: boolean;
   small?: boolean;
@@ -14,28 +16,33 @@ const Button: React.FC<ButtonProps> = ({
   primmary,
   small,
 }) => {
-  const bgColor = primmary ? "green" : "white";
-  const fontColor = primmary ? "white" : "green";
+  const { COLORS, SIZES } = theme;
 
-  const handleWidth = small ? 184 : 225;
-  const handleHeight = small ? 55 : 67;
+  const bgColor = primmary ? COLORS.primmary : COLORS.white;
+  const fontColor = primmary ? COLORS.white : COLORS.primmary;
+
+  const handleWidth = small ? 180 : 218;
+  const handleHeight = small ? 63 : 74;
 
   const handleStyles = StyleSheet.create({
     touchable: {
-      height: handleHeight + 15,
-      width: handleWidth + 15,
+      height: handleHeight,
+      width: handleWidth,
       margin: 5,
     },
     container: {
       flex: 0.95,
-      borderRadius: 25,
-      borderWidth: 3,
-      borderColor: "green",
-      backgroundColor: bgColor,
       justifyContent: "center",
       alignItems: "center",
+
+      borderColor: COLORS.primmary,
+      borderRadius: 25,
+      borderWidth: 1,
+
+      backgroundColor: bgColor,
     },
     text: {
+      fontSize: SIZES.h3,
       color: fontColor,
     },
   });

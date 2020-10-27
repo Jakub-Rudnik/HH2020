@@ -1,101 +1,91 @@
 /* eslint-disable @typescript-eslint/no-var-requires */
 import React, { useState, useEffect, useRef, useContext } from "react";
-import { Text, View } from "react-native";
+import { ImageURISource, View } from "react-native";
+
 import * as Permission from "expo-permissions";
-import * as ImageManipulator from "expo-image-manipulator";
-import * as tf from "@tensorflow/tfjs";
-import { bundleResourceIO, decodeJpeg } from "@tensorflow/tfjs-react-native";
 import { Camera } from "expo-camera";
-import { Button, TouchableIcon } from "../../components/Interactive";
-import { BackgroundImage, Block, Rounded } from "../../components/Layout";
+
+import { bundleResourceIO, decodeJpeg } from "@tensorflow/tfjs-react-native";
+import * as tf from "@tensorflow/tfjs";
+
 import { AppStorage } from "../../routes-and-providers/AppProvider";
-import Loading from "../Loading";
+
+import { capturePhoto, resizePhoto } from "../../utilities/functions";
+import { Button, TouchableIcon } from "../../components/Interactive";
 import { ScanStackNavProps } from "../../navigation/ScanParamList";
+import { Block, Rounded } from "../../components/Layout";
+import Loading from "../Loading";
+
+type predictionType = tf.Tensor<tf.Rank> | tf.Tensor<tf.Rank>[];
+type dataSyncType = Float32Array | Int32Array | Uint8Array;
 
 const Scan = ({ navigation }: ScanStackNavProps<"Scan">): JSX.Element => {
-  const MODELJSON = "../../../assets/model/model.json";
-  const MODELBIN = "../../../assets/model/group1-shard1of1.bin";
+  const MODELJSON: tf.io.ModelJSON = require("../../../assets/model/model.json");
+  const MODELBIN: number = require("../../../assets/model/group1-shard1of1.bin");
+
+  const icon1: ImageURISource = require("./../../../assets/icons/Icon1.png");
+  const icon2: ImageURISource = require("./../../../assets/icons/Icon2.png");
+
+  const { aiModel, setAiModel } = useContext(AppStorage);
 
   const [hasPermission, setHasPermission] = useState<boolean>(false);
   const [isTfReady, setIsTfReady] = useState<boolean>(false);
+  const [isScaning, setIsScaning] = useState<boolean>(false);
   const [tfModel, setTfModel] = useState<tf.GraphModel | null>(null);
   const [type, setType] = useState(Camera.Constants.Type.back);
-  const [isScaning, setIsScaning] = useState<boolean>(false);
+
   const cameraRef = useRef<Camera>(null);
 
-  const icon1 = require("./../../../assets/icons/Icon1.png");
-  const icon2 = require("./../../../assets/icons/Icon2.png");
-
-  const { aiModel, changeAiModel } = useContext(AppStorage);
-
-  // -----------------------------------------------------
-  // Utilyty functions
-  // -----------------------------------------------------
-  const capturePhoto = async () => {
-    if (cameraRef && cameraRef.current) {
-      const photo = await cameraRef.current.takePictureAsync();
-      return photo;
-    }
-    return null;
-  };
-
-  const resizePhoto = async (photo: string) => {
-    const manipulatedImage = await ImageManipulator.manipulateAsync(
-      photo,
-      [{ resize: { height: 640, width: 640 } }],
-      { compress: 0.9, base64: true }
-    );
-    return manipulatedImage;
-  };
-
+  // Object detection logic based on impoted and loaded ai model from file or context.
+  // Can scan only one image at the time!
+  // !!! Console log's for debugging !!!
   const detectObjects = async () => {
     if (!isScaning) {
       setIsScaning(true);
-      console.log("1/2 Capture photo!");
-      const photo = await capturePhoto();
+      console.log("Capture photo!");
+      const photo = await capturePhoto(cameraRef);
 
-      console.log("2/2 Loading model!");
-      const model = tfModel;
-
-      if (photo && model) {
+      if (photo && tfModel) {
         try {
-          console.log("! Starting !");
-          const resPhoto = await resizePhoto(photo.uri);
-          console.log("Photo has been resized.");
+          console.log("Resize photo!");
+          const { base64 } = await resizePhoto(photo.uri, 640, 640);
 
-          if (resPhoto.base64) {
-            const imgBuffer = tf.util.encodeString(resPhoto.base64, "base64")
-              .buffer;
-            console.log("Photo has been encoded.");
+          if (base64) {
+            // Change image to 4-dimension's array to fit into ai model
+            const imgBuffer = tf.util.encodeString(base64, "base64").buffer;
             const raw = new Uint8Array(imgBuffer);
-            console.log("Photo has been converted to unit8array.");
             const imageTensor = decodeJpeg(raw);
-            console.log("Photo has been decoded to a 3D Tensor.");
             const image4d = imageTensor.expandDims(0);
 
-            const predictions:
-              | tf.Tensor<tf.Rank>
-              | tf.Tensor<tf.Rank>[] = await model.executeAsync(image4d);
+            // Each prediction is array where on the
+            // 8 place is prediction's label
+            // 2 place is prediction's score
+            const predictions: predictionType = await tfModel.executeAsync(
+              image4d
+            );
 
-            if (Array.isArray(predictions) && predictions[2]) {
-              const scores = predictions[1].dataSync();
-              const names = predictions[7].dataSync();
+            if (Array.isArray(predictions) && predictions[7]) {
+              const scores: dataSyncType = predictions[1].dataSync();
+              const names: dataSyncType = predictions[7].dataSync();
 
-              scores.forEach((e: number, i: number) => {
-                if (e > 0.3) {
-                  console.log("Trafne: " + names[i]);
-                  console.log(e);
+              scores.forEach((score: number, i: number) => {
+                // 0.3 === 30% certainty
+                if (score > 0.3) {
+                  console.log(`Item: ${names[i]}, score: ${score}`);
+                  //
+                  // * Send to app provider *
+                  //
                 }
               });
             }
           } else {
             console.log("Cant properly resize photo with base64 as output");
           }
-        } catch (e) {
-          console.log("Error with detecting: " + e);
+        } catch (error) {
+          console.log("Error with detecting: " + error);
         } finally {
           setIsScaning(false);
-          console.log("! Done  !");
+          console.log("! Done !");
         }
       } else {
         console.log("Problem with model or photo");
@@ -105,42 +95,33 @@ const Scan = ({ navigation }: ScanStackNavProps<"Scan">): JSX.Element => {
 
   const askPermission = async () => {
     const { status } = await Permission.askAsync(Permission.CAMERA);
-    console.log("Permission to camera: " + status);
     setHasPermission(status === "granted");
   };
-  // -----------------------------------------------------
-  // -----------------------------------------------------
 
   useEffect(() => {
     (async () => {
-      if (!isTfReady || tfModel == null) {
+      if (!isTfReady || !tfModel) {
         await tf.ready();
-        console.log("Tenserflow framework is ready to work!");
+        console.log("Loading ai model");
         try {
-          console.log("Loading ai model");
-          if (aiModel === null) {
+          if (!aiModel) {
             console.log("From file");
-            const modelJson = require(MODELJSON);
-            const modelWeights = require(MODELBIN);
 
             const model = await tf.loadGraphModel(
-              bundleResourceIO(modelJson, modelWeights)
+              bundleResourceIO(MODELJSON, MODELBIN)
             );
 
-            changeAiModel(model);
+            setAiModel(model);
             setTfModel(model);
           } else {
             console.log("From context");
-            const model = aiModel;
-            setTfModel(model);
+            setTfModel(aiModel);
           }
 
+          setIsTfReady(true);
           console.log("Succes");
         } catch (error) {
           console.log("Failed with: " + error);
-        } finally {
-          setIsTfReady(true);
-          console.log("Operation ended.");
         }
       }
 
@@ -148,7 +129,15 @@ const Scan = ({ navigation }: ScanStackNavProps<"Scan">): JSX.Element => {
         askPermission().catch((e) => console.log(e));
       }
     })();
-  }, [aiModel, changeAiModel, hasPermission, isTfReady, tfModel]);
+  }, [
+    MODELBIN,
+    MODELJSON,
+    aiModel,
+    setAiModel,
+    hasPermission,
+    isTfReady,
+    tfModel,
+  ]);
 
   if (isTfReady === false) {
     return <Loading />;
@@ -179,6 +168,8 @@ const Scan = ({ navigation }: ScanStackNavProps<"Scan">): JSX.Element => {
       style={{ width: "100%", height: "100%" }}
       type={type}
     >
+      {/* Połączenie view i block bo jak było na samych blocka
+      ch to przycisków nie dało się klikać ?!?, trzeba to naprawić */}
       <Block flexDirection={"column"} justifyContent={"flex-start"}>
         <View style={{ height: "25%" }} />
         <View

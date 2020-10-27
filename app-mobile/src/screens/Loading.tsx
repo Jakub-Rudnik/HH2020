@@ -1,6 +1,7 @@
 import React from "react";
 import { Text, ActivityIndicator, StyleSheet } from "react-native";
 import { BackgroundImage, Block } from "../components/Layout";
+import { theme } from "../utilities/constants/theme";
 
 interface LoadingProps {}
 
@@ -10,7 +11,7 @@ const Loading: React.FC<LoadingProps> = () => {
       <BackgroundImage reversed />
       <Block flexDirection={"column"}>
         <Text style={styles.text}>Ładowanie</Text>
-        <ActivityIndicator size="large" color={"green"} />
+        <ActivityIndicator size="large" color={theme.COLORS.primmary} />
       </Block>
     </Block>
   );
@@ -19,7 +20,7 @@ const Loading: React.FC<LoadingProps> = () => {
 const styles = StyleSheet.create({
   text: {
     margin: 25,
-    fontSize: 18,
+    fontSize: theme.SIZES.regular,
   },
 });
 

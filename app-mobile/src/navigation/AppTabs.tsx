@@ -7,12 +7,17 @@ import AddRecipe from "./../screens/AddRecipe/AddRecipe";
 import Profile from "./../screens/Profile/Profile";
 import Scan from "./ScanStack";
 import { IconAdd, IconScan, IconProfile } from "./../components/Layout/icons/";
+import { theme } from "../utilities/constants/theme";
 
 interface AppTabsProps {}
 
 const Tabs = createBottomTabNavigator<AppParamList>();
 
 const AppTabs: React.FC<AppTabsProps> = () => {
+  const {
+    COLORS: { primmary },
+  } = theme;
+
   return (
     <NavigationContainer>
       <Tabs.Navigator
@@ -20,16 +25,16 @@ const AppTabs: React.FC<AppTabsProps> = () => {
         screenOptions={({ route }) => ({
           tabBarIcon: ({ focused }) => {
             if (route.name === "AddRecipe") {
-              return focused ? <IconAdd handleFill={"#C9EAC1"} /> : <IconAdd />;
+              return focused ? <IconAdd handleFill={primmary} /> : <IconAdd />;
             } else if (route.name === "Scan") {
               return focused ? (
-                <IconScan handleFill={"#C9EAC1"} />
+                <IconScan handleFill={primmary} />
               ) : (
                 <IconScan />
               );
             } else if (route.name === "Profile") {
               return focused ? (
-                <IconProfile handleFill={"#C9EAC1"} />
+                <IconProfile handleFill={primmary} />
               ) : (
                 <IconProfile />
               );
@@ -38,8 +43,7 @@ const AppTabs: React.FC<AppTabsProps> = () => {
         })}
         tabBarOptions={{
           showLabel: false,
-          activeTintColor: "#C9EAC1",
-          inactiveTintColor: "gray",
+          activeTintColor: primmary,
         }}
       >
         <Tabs.Screen name="AddRecipe" component={AddRecipe} />
