@@ -5,32 +5,37 @@ import { ImageURISource, View } from "react-native";
 import * as Permission from "expo-permissions";
 import { Camera } from "expo-camera";
 
-import { bundleResourceIO, decodeJpeg } from "@tensorflow/tfjs-react-native";
+import { bundleResourceIO } from "@tensorflow/tfjs-react-native";
 import * as tf from "@tensorflow/tfjs";
 
-import { AppStorage } from "../../routes-and-providers/AppProvider";
-
-import { capturePhoto, resizePhoto } from "../../utilities/functions";
 import { Button, TouchableIcon } from "../../components/Interactive";
 import { ScanStackNavProps } from "../../navigation/ScanParamList";
 import { Block, Rounded } from "../../components/Layout";
 import Loading from "../Loading";
 
+import { AppStorage } from "../../routes-and-providers/AppProvider";
+import {
+  capturePhoto,
+  convertTo4d,
+  resizePhoto,
+  unpackAiPredictions,
+} from "../../utilities/functions";
+
 type predictionType = tf.Tensor<tf.Rank> | tf.Tensor<tf.Rank>[];
-type dataSyncType = Float32Array | Int32Array | Uint8Array;
 
 const Scan = ({ navigation }: ScanStackNavProps<"Scan">): JSX.Element => {
   const MODELJSON: tf.io.ModelJSON = require("../../../assets/model/model.json");
   const MODELBIN: number = require("../../../assets/model/group1-shard1of1.bin");
+  const THRESHOLD = 0.3; // For selecting the correct image from detection - ex. 0.3 = certainty 30%
 
   const icon1: ImageURISource = require("./../../../assets/icons/Icon1.png");
   const icon2: ImageURISource = require("./../../../assets/icons/Icon2.png");
 
   const { aiModel, setAiModel } = useContext(AppStorage);
 
-  const [hasPermission, setHasPermission] = useState<boolean>(false);
-  const [isTfReady, setIsTfReady] = useState<boolean>(false);
-  const [isScaning, setIsScaning] = useState<boolean>(false);
+  const [hasPermission, setHasPermission] = useState(false);
+  const [isTfReady, setIsTfReady] = useState(false);
+  const [isScaning, setIsScaning] = useState(false);
   const [tfModel, setTfModel] = useState<tf.GraphModel | null>(null);
   const [type, setType] = useState(Camera.Constants.Type.back);
 
@@ -38,11 +43,10 @@ const Scan = ({ navigation }: ScanStackNavProps<"Scan">): JSX.Element => {
 
   // Object detection logic based on impoted and loaded ai model from file or context.
   // Can scan only one image at the time!
-  // !!! Console log's for debugging !!!
+  // !!! Console log's for debugging purpose only !!!
   const detectObjects = async () => {
     if (!isScaning) {
       setIsScaning(true);
-      console.log("Capture photo!");
       const photo = await capturePhoto(cameraRef);
 
       if (photo && tfModel) {
@@ -52,32 +56,22 @@ const Scan = ({ navigation }: ScanStackNavProps<"Scan">): JSX.Element => {
 
           if (base64) {
             // Change image to 4-dimension's array to fit into ai model
-            const imgBuffer = tf.util.encodeString(base64, "base64").buffer;
-            const raw = new Uint8Array(imgBuffer);
-            const imageTensor = decodeJpeg(raw);
-            const image4d = imageTensor.expandDims(0);
-
-            // Each prediction is array where on the
-            // 8 place is prediction's label
-            // 2 place is prediction's score
-            const predictions: predictionType = await tfModel.executeAsync(
+            const image4d = convertTo4d(base64);
+            const rawPredictions: predictionType = await tfModel.executeAsync(
               image4d
             );
 
-            if (Array.isArray(predictions) && predictions[7]) {
-              const scores: dataSyncType = predictions[1].dataSync();
-              const names: dataSyncType = predictions[7].dataSync();
+            // Each prediction is array where on the
+            // 8th place is prediction's label
+            // 2nd place is prediction's score
+            const predictions = unpackAiPredictions(
+              rawPredictions,
+              THRESHOLD,
+              8,
+              2
+            );
 
-              scores.forEach((score: number, i: number) => {
-                // 0.3 === 30% certainty
-                if (score > 0.3) {
-                  console.log(`Item: ${names[i]}, score: ${score}`);
-                  //
-                  // * Send to app provider *
-                  //
-                }
-              });
-            }
+            console.log(predictions);
           } else {
             console.log("Cant properly resize photo with base64 as output");
           }

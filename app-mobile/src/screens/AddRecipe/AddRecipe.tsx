@@ -1,12 +1,13 @@
 import React from "react";
 import { Text } from "react-native";
-import { Block } from "../../components/Layout";
+import { BackgroundImage, Block } from "../../components/Layout";
 
 interface AddRecipeProps {}
 
 const AddRecipe: React.FC<AddRecipeProps> = () => {
   return (
     <Block>
+      <BackgroundImage reversed />
       <Text>123456789</Text>
     </Block>
   );
