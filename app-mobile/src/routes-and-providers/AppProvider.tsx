@@ -1,41 +1,64 @@
-import React, { createContext, useState } from "react";
+import React, {
+  createContext,
+  Dispatch,
+  SetStateAction,
+  useState,
+} from "react";
 import { GraphModel } from "@tensorflow/tfjs";
 
 interface AppProviderProps {
   children?: React.ReactNode;
 }
 
-export const AppStorage = createContext<{
-  setAiModel: (model: GraphModel) => void;
-  aiModel: GraphModel | null;
+interface AppStorageObject {
+  appInfo: {
+    isAppLoading: boolean;
+  };
+  ai: {
+    model: GraphModel | null;
+    setModel: Dispatch<SetStateAction<GraphModel | null>>;
+  };
+  scannedItems: {
+    listOfScannedItems: Array<string>;
+    setScannedItems: Dispatch<SetStateAction<string[]>>;
+  };
+}
 
-  listOfScannedItems: Array<string>;
-  isAppLoading: boolean;
-}>({
-  setAiModel: () => null,
-  aiModel: null,
-
-  listOfScannedItems: [],
-  isAppLoading: true,
+export const AppStorage = createContext<AppStorageObject>({
+  appInfo: {
+    isAppLoading: true,
+  },
+  ai: {
+    model: null,
+    setModel: () => null,
+  },
+  scannedItems: {
+    listOfScannedItems: [],
+    setScannedItems: () => null,
+  },
 });
 
 export const AppProvider: React.FC<AppProviderProps> = ({ children }) => {
-  const [aiModel, handleSetAiModel] = useState<GraphModel | null>(null);
+  const [handleAiModel, handleSetAiModel] = useState<GraphModel | null>(null);
+  const [handleScannedItems, handleSetScannedItems] = useState<Array<string>>(
+    []
+  );
 
-  const handleChangeAiModel = (model: GraphModel) => {
-    handleSetAiModel(model);
+  const appStorage: AppStorageObject = {
+    appInfo: {
+      isAppLoading: false,
+    },
+    ai: {
+      model: handleAiModel,
+      setModel: handleSetAiModel,
+    },
+    scannedItems: {
+      listOfScannedItems: handleScannedItems,
+      setScannedItems: handleSetScannedItems,
+    },
   };
 
   return (
-    <AppStorage.Provider
-      value={{
-        setAiModel: handleChangeAiModel,
-        aiModel: aiModel,
-        listOfScannedItems: [],
-        isAppLoading: false,
-      }}
-    >
-      {children}
-    </AppStorage.Provider>
+    <AppStorage.Provider value={appStorage}>{children}</AppStorage.Provider>
   );
 };

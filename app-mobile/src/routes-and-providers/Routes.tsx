@@ -6,9 +6,9 @@ import AppTabs from "./../navigation/AppTabs";
 interface RoutesProps {}
 
 const Routes: React.FC<RoutesProps> = () => {
-  const { isAppLoading } = useContext(AppStorage);
+  const { appInfo } = useContext(AppStorage);
 
-  return <>{isAppLoading ? <Loading /> : <AppTabs />}</>;
+  return <>{appInfo.isAppLoading ? <Loading /> : <AppTabs />}</>;
 };
 
 export default Routes;

@@ -31,7 +31,7 @@ const Scan = ({ navigation }: ScanStackNavProps<"Scan">): JSX.Element => {
   const icon1: ImageURISource = require("./../../../assets/icons/Icon1.png");
   const icon2: ImageURISource = require("./../../../assets/icons/Icon2.png");
 
-  const { aiModel, setAiModel } = useContext(AppStorage);
+  const { ai } = useContext(AppStorage);
 
   const [hasPermission, setHasPermission] = useState(false);
   const [isTfReady, setIsTfReady] = useState(false);
@@ -98,18 +98,18 @@ const Scan = ({ navigation }: ScanStackNavProps<"Scan">): JSX.Element => {
         await tf.ready();
         console.log("Loading ai model");
         try {
-          if (!aiModel) {
+          if (!ai.model) {
             console.log("From file");
 
             const model = await tf.loadGraphModel(
               bundleResourceIO(MODELJSON, MODELBIN)
             );
 
-            setAiModel(model);
+            ai.setModel(model);
             setTfModel(model);
           } else {
             console.log("From context");
-            setTfModel(aiModel);
+            setTfModel(ai.model);
           }
 
           setIsTfReady(true);
@@ -123,15 +123,7 @@ const Scan = ({ navigation }: ScanStackNavProps<"Scan">): JSX.Element => {
         askPermission().catch((e) => console.log(e));
       }
     })();
-  }, [
-    MODELBIN,
-    MODELJSON,
-    aiModel,
-    setAiModel,
-    hasPermission,
-    isTfReady,
-    tfModel,
-  ]);
+  }, [MODELBIN, MODELJSON, hasPermission, isTfReady, tfModel, ai]);
 
   if (isTfReady === false) {
     return <Loading />;
