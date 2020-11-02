@@ -9,11 +9,11 @@ import { bundleResourceIO } from "@tensorflow/tfjs-react-native";
 import * as tf from "@tensorflow/tfjs";
 
 import { Button, TouchableIcon } from "../../components/Interactive";
-import { ScanStackNavProps } from "../../navigation/ScanParamList";
 import { Block, Rounded } from "../../components/Layout";
 import Loading from "../Loading";
 
 import { AppStorage } from "../../routes-and-providers/AppProvider";
+import { ScanStackNavProps } from "../../navigation/ScanParamList";
 import {
   capturePhoto,
   convertTo4d,
@@ -23,21 +23,29 @@ import {
 
 type predictionType = tf.Tensor<tf.Rank> | tf.Tensor<tf.Rank>[];
 
+interface predictionItem {
+  label: number;
+  certainty: number;
+}
+
 const Scan = ({ navigation }: ScanStackNavProps<"Scan">): JSX.Element => {
   const MODELJSON: tf.io.ModelJSON = require("../../../assets/model/model.json");
   const MODELBIN: number = require("../../../assets/model/group1-shard1of1.bin");
   const THRESHOLD = 0.3; // For selecting the correct image from detection - ex. 0.3 = certainty 30%
 
-  const icon1: ImageURISource = require("./../../../assets/icons/Icon1.png");
-  const icon2: ImageURISource = require("./../../../assets/icons/Icon2.png");
+  const ICON1: ImageURISource = require("./../../../assets/icons/Icon1.png");
+  const ICON2: ImageURISource = require("./../../../assets/icons/Icon2.png");
 
   const { ai } = useContext(AppStorage);
 
   const [hasPermission, setHasPermission] = useState(false);
-  const [isTfReady, setIsTfReady] = useState(false);
   const [isScaning, setIsScaning] = useState(false);
+  const [isTfReady, setIsTfReady] = useState(false);
   const [tfModel, setTfModel] = useState<tf.GraphModel | null>(null);
   const [type, setType] = useState(Camera.Constants.Type.back);
+  const [sessionScannedItems, setSessionScannedItems] = useState<
+    Array<predictionItem>
+  >([]);
 
   const cameraRef = useRef<Camera>(null);
 
@@ -51,7 +59,6 @@ const Scan = ({ navigation }: ScanStackNavProps<"Scan">): JSX.Element => {
 
       if (photo && tfModel) {
         try {
-          console.log("Resize photo!");
           const { base64 } = await resizePhoto(photo.uri, 640, 640);
 
           if (base64) {
@@ -62,8 +69,8 @@ const Scan = ({ navigation }: ScanStackNavProps<"Scan">): JSX.Element => {
             );
 
             // Each prediction is array where on the
-            // 8th place is prediction's label
             // 2nd place is prediction's score
+            // 8th place is prediction's label
             const predictions = unpackAiPredictions(
               rawPredictions,
               THRESHOLD,
@@ -71,7 +78,14 @@ const Scan = ({ navigation }: ScanStackNavProps<"Scan">): JSX.Element => {
               2
             );
 
+            predictions.forEach((prediction) => {
+              setSessionScannedItems((items) => [...items, prediction]);
+            });
+
+            console.log("predictions");
             console.log(predictions);
+            console.log("sessionScannedItems");
+            console.log(sessionScannedItems);
           } else {
             console.log("Cant properly resize photo with base64 as output");
           }
@@ -167,7 +181,7 @@ const Scan = ({ navigation }: ScanStackNavProps<"Scan">): JSX.Element => {
           }}
         >
           <TouchableIcon
-            icon={icon1}
+            icon={ICON1}
             handleOnClick={() => {
               setType(
                 type === Camera.Constants.Type.back
@@ -177,10 +191,10 @@ const Scan = ({ navigation }: ScanStackNavProps<"Scan">): JSX.Element => {
             }}
           />
           <TouchableIcon
-            icon={icon2}
+            icon={ICON2}
             reversed
             handleOnClick={() => {
-              navigation.navigate("Accept");
+              navigation.navigate("Accept", sessionScannedItems);
             }}
           />
         </View>

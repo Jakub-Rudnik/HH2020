@@ -2,7 +2,10 @@ import { RouteProp } from "@react-navigation/native";
 import { StackNavigationProp } from "@react-navigation/stack";
 
 export type ScanParamList = {
-    Accept: undefined;
+    Accept: Array<{
+        label: number,
+        certainty: number,   
+    }>;
     Scan: undefined;
     Start: undefined;
 };

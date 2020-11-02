@@ -2,10 +2,14 @@ import React from "react";
 import { Text } from "react-native";
 import { Button } from "../../components/Interactive";
 import { BackgroundImage, Block } from "../../components/Layout";
+import { ScanStackNavProps } from "../../navigation/ScanParamList";
 
-interface AcceptProps {}
+const Accept = ({ route }: ScanStackNavProps<"Accept">): JSX.Element => {
+  const predictionItems = route.params;
 
-const Accept: React.FC<AcceptProps> = () => {
+  console.log("predictionItems");
+  console.log(predictionItems);
+
   return (
     <Block flexDirection={"column"} justifyContent={"space-between"}>
       <BackgroundImage />
